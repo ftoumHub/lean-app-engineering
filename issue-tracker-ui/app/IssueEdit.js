@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
-
+import { FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Panel, Form, Col, Alert } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import NumInput from './NumInput.js';
 import DateInput from './DateInput.js';
 
@@ -10,19 +10,17 @@ export default class IssueEdit extends React.Component {
     super();
     this.state = {
       issue: {
-        _id: '',
-        title: '',
-        status: '',
-        owner: '',
-        effort: null,
-        completionDate: null,
-        created: null
+        _id: '', title: '', status: '', owner: '', effort: null,
+        completionDate: null, created: null,
       },
       invalidFields: {},
+      showingValidation: false,
     };
     this.onChange = this.onChange.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.dismissValidation = this.dismissValidation.bind(this);
+    this.showValidation = this.showValidation.bind(this);
   }
 
   componentDidMount() {
@@ -35,40 +33,8 @@ export default class IssueEdit extends React.Component {
     }
   }
 
-  onSubmit(event) {
-    console.log('==> Soumission de la mise à jour.');
-
-    event.preventDefault();
-    if (Object.keys(this.state.invalidFields).length !== 0) {
-      return;
-    }
-    fetch(`/api/issues/${this.props.params.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.state.issue),
-    }).then(response => {
-      if (response.ok) {
-        response.json().then(updatedIssue => {
-          updatedIssue.created = new Date(updatedIssue.created);
-          if (updatedIssue.completionDate) {
-            updatedIssue.completionDate = new Date(updatedIssue.
-                completionDate);
-          }
-          this.setState({ issue: updatedIssue });
-          alert('Updated issue successfully.');
-        });
-      } else {
-        response.json().then(error => {
-          alert(`Failed to update issue: ${error.message}`);
-        });
-      }
-    }).catch(err => {
-      alert(`Error in sending data to server: ${err.message}`);
-    });
-  }
-
   onChange(event, convertedValue) {
-  	console.log('==> onChange dans IssueEdit');
+    console.log('==> onChange dans IssueEdit');
     const issue = Object.assign({}, this.state.issue);
     // On utilise le nom de chaque input comme une clé dans l'objet state
     // afin d'affecter la nouvelle valeur de la propriété modifiée.
@@ -90,18 +56,53 @@ export default class IssueEdit extends React.Component {
     this.setState({ invalidFields });
   }
 
-  loadData() {
-  	console.log('Loading data from : ' + `/api/issues/${this.props.params.id}`);
+  onSubmit(event) {
+    console.log('==> Soumission de la mise à jour.');
 
+    event.preventDefault();
+    this.showValidation();
+    if (Object.keys(this.state.invalidFields).length !== 0) {
+      return;
+    }
+    fetch(`/api/issues/${this.props.params.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.state.issue),
+    }).then(response => {
+      if (response.ok) {
+        response.json().then(updatedIssue => {
+          updatedIssue.created = new Date(updatedIssue.created);
+          if (updatedIssue.completionDate) {
+            updatedIssue.completionDate = new Date(updatedIssue.completionDate);
+          }
+          this.setState({ issue: updatedIssue });
+          alert('Updated issue successfully.');
+        });
+      } else {
+        response.json().then(error => {
+          alert(`Failed to update issue: ${error.message}`);
+        });
+      }
+    }).catch(err => {
+      alert(`Error in sending data to server: ${err.message}`);
+    });
+  }
+
+  showValidation() {
+    this.setState({ showingValidation: true });
+  }
+
+  dismissValidation() {
+    this.setState({ showingValidation: false });
+  }
+
+  loadData() {
     fetch(`/api/issues/${this.props.params.id}`).then(response => {
       if (response.ok) {
-      	// On convertit chaque attribut en string ce qui est requis par le html.
         response.json().then(issue => {
           issue.created = new Date(issue.created);
           issue.completionDate = issue.completionDate != null ?
             new Date(issue.completionDate) : null;
-          //issue.effort = issue.effort != null ? issue.effort.toString() : '';
-          // On créé un nouveau state
           this.setState({ issue });
         });
       } else {
@@ -116,37 +117,87 @@ export default class IssueEdit extends React.Component {
 
   render() {
     const issue = this.state.issue;
-    const validationMessage = Object.keys(this.state.invalidFields).length === 0 ? null
-      : (<div className="error">Please correct invalid fields before submitting.</div>);
+    /*const validationMessage = Object.keys(this.state.invalidFields).length === 0 ? null
+      : (<div className="error">Please correct invalid fields before submitting.</div>);*/
+    let validationMessage = null;
+    if (Object.keys(this.state.invalidFields).length !== 0 && this.state.showingValidation) {
+      validationMessage = (
+        <Alert bsStyle="danger" onDismiss={this.dismissValidation}>
+          Please correct invalid fields before submitting.
+        </Alert>
+      );
+    }
+
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
-          Created: {issue.created ? issue.created.toDateString() : ''}
-          <br />
-          Status: <select name="status" value={issue.status} onChange={this.onChange}>
-            <option value="NEW">New</option>
-            <option value="OPEN">Open</option>
-            <option value="ASSIGNED">Assigned</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="DONE">Done</option>
-          </select>
-          <br />
-          Owner: <input name="owner" value={issue.owner} onChange={this.onChange} />
-          <br />
-          Effort: <NumInput size={5} name="effort" value={issue.effort} onChange={this.onChange} />
-          <br />
-          Completion Date: <DateInput
-            name="completionDate" value={issue.completionDate} onChange={this.onChange}
-            onValidityChange={this.onValidityChange}
-          />
-          <br />
-          Title: <input name="title" size={50} value={issue.title} onChange={this.onChange} />
-          <br />
-          {validationMessage}
-          <button type="submit">Submit</button>
-          <Link to="/issues">Back to issue list</Link>
-        </form>
-      </div>
+      <Panel header="Edit Issue">
+        <Form horizontal onSubmit={this.onSubmit}>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={3}>Created</Col>
+            <Col sm={9}>
+              <FormControl.Static>
+                {issue.created ? issue.created.toDateString() : ''}
+              </FormControl.Static>
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={3}>Status</Col>
+            <Col sm={9}>
+              <FormControl componentClass="select" name="status" value={issue.status} onChange={this.onChange}>
+                <option value="NEW">New</option>
+                <option value="OPEN">Open</option>
+                <option value="ASSIGNED">Assigned</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DONE">Done</option>
+              </FormControl>
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={3}>Owner</Col>
+            <Col sm={9}>
+              <FormControl name="owner" value={issue.owner} onChange={this.onChange} />
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={3}>Effort</Col>
+            <Col sm={9}>
+              <FormControl
+                componentClass={NumInput} name="effort"
+                value={issue.effort} onChange={this.onChange}
+              />
+            </Col>
+          </FormGroup>
+          <FormGroup validationState={this.state.invalidFields.completionDate ? 'error' : null}>
+            <Col componentClass={ControlLabel} sm={3}>Completion Date</Col>
+            <Col sm={9}>
+              <FormControl
+                componentClass={DateInput} name="completionDate"
+                value={issue.completionDate} onChange={this.onChange}
+                onValidityChange={this.onValidityChange}
+              />
+              <FormControl.Feedback />
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={3}>Title</Col>
+            <Col sm={9}>
+              <FormControl name="title" value={issue.title} onChange={this.onChange} />
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col smOffset={3} sm={6}>
+              <ButtonToolbar>
+                <Button bsStyle="primary" type="submit">Submit</Button>
+                <LinkContainer to="/issues">
+                  <Button bsStyle="link">Back</Button>
+                </LinkContainer>
+              </ButtonToolbar>
+            </Col>
+          </FormGroup>
+          <FormGroup>
+            <Col smOffset={3} sm={9}>{validationMessage}</Col>
+          </FormGroup>
+        </Form>
+      </Panel>
     );
   }
 }
