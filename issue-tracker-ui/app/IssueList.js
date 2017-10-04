@@ -1,37 +1,12 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { Button, Glyphicon, Table, Panel } from 'react-bootstrap';
+//import mockupIssues from '../mockups/issues';
 
+import IssueRow from './IssueRow.js';
 import IssueAdd from './IssueAdd.js';
 import IssueFilter from './IssueFilter.js';
 
-// La version ES2015 d'un composant avec une arrow function,
-// pas de return car on ne renvoi qu'une instruction unique.
-const IssueRow = (props) => {
-  function onDeleteClick() {
-    props.deleteIssue(props.issue.id);
-  }
-
-  return (
-    <tr>
-      <td><Link to={`/issues/${props.issue.id}`}>{props.issue.id}</Link></td>
-      <td>{props.issue.status}</td>
-      <td>{props.issue.owner}</td>
-      <td>{props.issue.created.toDateString()}</td>
-      <td>{props.issue.effort}</td>
-      <td>{props.issue.completionDate ? props.issue.completionDate.toDateString() : ''}</td>
-      <td>{props.issue.title}</td>
-      <td>
-        <Button bsSize="xsmall" onClick={onDeleteClick}><Glyphicon glyph="trash" /></Button>
-      </td>
-    </tr>
-  );
-};
-
-IssueRow.propTypes = {
-  issue: React.PropTypes.object.isRequired,
-  deleteIssue: React.PropTypes.func.isRequired,
-};
 
 // Un composant plus classique avec un return,
 // indispensable lorsque la fonction comprend plus d'une instruction
@@ -109,6 +84,7 @@ export default class IssueList extends Component {
       this.setState({ issues: data.records });
     }).catch(err => {
       console.log(err);
+      //this.setState({ issues: mockupIssues });
     });
   }
 
