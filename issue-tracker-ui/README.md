@@ -1,14 +1,14 @@
-JSX Quirks
-============
+Issue-Tracker-UI
+================
 
-**Install**
+**Installation des dépendances**
 ```
 npm install
 ```
 
-**Start the application in development mode**
+**Démarrage de l'application en mode développement**
 ```
 npm start
 ```
 
-Open http://localhost:8080 in your browser.
+Ouvrir http://localhost:8080 dans un navigateur.

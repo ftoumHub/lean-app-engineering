@@ -20,6 +20,7 @@ export default class DateInput extends React.Component {
   }
 
   onBlur(e) {
+    console.log('==> onBlur DateInput : ' + this.state.value);
     const value = this.unformat(this.state.value);
     const valid = this.state.value === '' || value != null;
     if (valid !== this.state.valid && this.props.onValidityChange) {

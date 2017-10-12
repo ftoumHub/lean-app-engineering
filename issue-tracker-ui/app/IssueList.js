@@ -41,10 +41,23 @@ export default class IssueList extends Component {
   constructor() {
     super();
     // l'état initial est un tableau d'issues vide
-    this.state = { issues: [] };
+    this.state = {
+      issues: [],
+      toastVisible: false, toastMessage: '', toastType: 'success',
+    };
     this.createIssue = this.createIssue.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.deleteIssue = this.deleteIssue.bind(this);
+    this.showError = this.showError.bind(this);
+    this.dismissToast = this.dismissToast.bind(this);
+  }
+
+  showError(message) {
+    this.setState({ toastVisible: true, toastMessage: message, toastType:'danger' });
+  }
+
+  dismissToast() {
+    this.setState({ toastVisible: false });
   }
 
   // Méthode appelée lorsque la page est rechargée
@@ -70,20 +83,26 @@ export default class IssueList extends Component {
   loadData() {
     // on récupère les 'issues' depuis le backend
     console.log('Loading data from : ' + `/api/issues${this.props.location.search}`);
-    fetch(`/api/issues${this.props.location.search}`).then(response =>
-      response.json()
-    ).then(data => {
-      console.log("Nb d'enregistrements:", data._metadata.total_count);
-      data.records.forEach(issue => {
-        issue.created = new Date(issue.created);
-        if (issue.completionDate){
-          issue.completionDate = new Date(issue.completionDate);
-        }
-      });
-      // le nouveau state contient les enregistrements récupérés
-      this.setState({ issues: data.records });
+    fetch(`/api/issues${this.props.location.search}`).then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          console.log("Nb d'enregistrements:", data._metadata.total_count);
+          data.records.forEach(issue => {
+            issue.created = new Date(issue.created);
+            if (issue.completionDate) {
+              issue.completionDate = new Date(issue.completionDate);
+            }
+          });
+          // le nouveau state contient les enregistrements récupérés
+          this.setState({ issues: data.records });
+        });
+      } else {
+        response.json().then(error => {
+          this.showError(`Failed to fetch issues ${error.message}`);
+        });
+      }
     }).catch(err => {
-      console.log(err);
+      this.showError(`Error in fetching data from server: ${err}`);
       //this.setState({ issues: mockupIssues });
     });
   }

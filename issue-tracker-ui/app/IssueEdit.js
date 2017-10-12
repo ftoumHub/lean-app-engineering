@@ -3,6 +3,7 @@ import { FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Panel, For
 import { LinkContainer } from 'react-router-bootstrap';
 import NumInput from './NumInput.js';
 import DateInput from './DateInput.js';
+import Toast from './Toast.js';
 
 export default class IssueEdit extends React.Component {
 
@@ -13,14 +14,18 @@ export default class IssueEdit extends React.Component {
         _id: '', title: '', status: '', owner: '', effort: null,
         completionDate: null, created: null,
       },
-      invalidFields: {},
-      showingValidation: false,
+      invalidFields: {}, showingValidation: false,
+      toastVisible: false, toastMessage: '', toastType: 'success',
     };
     this.onChange = this.onChange.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.dismissValidation = this.dismissValidation.bind(this);
     this.showValidation = this.showValidation.bind(this);
+    this.showSuccess = this.showSuccess.bind(this);
+    this.showError = this.showError.bind(this);
+    this.dismissToast = this.dismissToast.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
   }
 
   componentDidMount() {
@@ -35,18 +40,19 @@ export default class IssueEdit extends React.Component {
 
   onChange(event, convertedValue) {
     console.log('==> onChange dans IssueEdit');
+
     const issue = Object.assign({}, this.state.issue);
     // On utilise le nom de chaque input comme une clé dans l'objet state
     // afin d'affecter la nouvelle valeur de la propriété modifiée.
     // Cette technique permet de combiner tous onChange de chaque input
     // dans une seule méthode.
-    //issue[event.target.name] = event.target.value;
     const value = (convertedValue !== undefined) ? convertedValue : event.target.value;
     issue[event.target.name] = value;
     this.setState({ issue });
   }
 
   onValidityChange(event, valid) {
+    console.log('==> onValidityChange dans IssueEdit');
     const invalidFields = Object.assign({}, this.state.invalidFields);
     if (!valid) {
       invalidFields[event.target.name] = true;
@@ -56,8 +62,14 @@ export default class IssueEdit extends React.Component {
     this.setState({ invalidFields });
   }
 
+  /**
+   * Mise à jour d'une tâche
+   *
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
   onSubmit(event) {
-    console.log('==> Soumission de la mise à jour.');
+    console.log('==> Soumission de la mise à jour : ');
 
     event.preventDefault();
     this.showValidation();
@@ -76,15 +88,15 @@ export default class IssueEdit extends React.Component {
             updatedIssue.completionDate = new Date(updatedIssue.completionDate);
           }
           this.setState({ issue: updatedIssue });
-          alert('Updated issue successfully.');
+          this.showSuccess('Updated issue successfully.');
         });
       } else {
         response.json().then(error => {
-          alert(`Failed to update issue: ${error.message}`);
+          this.showError(`Failed to update issue: ${error.message}`);
         });
       }
     }).catch(err => {
-      alert(`Error in sending data to server: ${err.message}`);
+      this.showError(`Error in sending data to server: ${err.message}`);
     });
   }
 
@@ -107,12 +119,32 @@ export default class IssueEdit extends React.Component {
         });
       } else {
         response.json().then(error => {
-          alert(`Failed to fetch issue: ${error.message}`);
+          this.showError(`Failed to fetch issue: ${error.message}`);
         });
       }
     }).catch(err => {
-      alert(`Error in fetching data from server: ${err.message}`);
+      this.showError(`Error in fetching data from server: ${err.message}`);
     });
+  }
+
+  showSuccess(message) {
+    this.setState({ toastVisible: true, toastMessage: message, toastType: 'success' });
+  }
+
+  showError(message) {
+    this.setState({ toastVisible: true, toastMessage: message, toastType: 'danger' });
+  }
+
+  dismissToast() {
+    this.setState({ toastVisible: false });
+  }
+
+  onKeyPress(event) {
+    // Object.keys(this.state.invalidFields).length !== 0
+    if (event.key === "Enter") {
+      console.log(this.state.invalidFields);
+      event.preventDefault();
+    }
   }
 
   render() {
@@ -130,13 +162,11 @@ export default class IssueEdit extends React.Component {
 
     return (
       <Panel header="Edit Issue">
-        <Form horizontal onSubmit={this.onSubmit}>
+        <Form horizontal onSubmit={this.onSubmit} onKeyPress={this.onKeyPress}>
           <FormGroup>
             <Col componentClass={ControlLabel} sm={3}>Created</Col>
             <Col sm={9}>
-              <FormControl.Static>
-                {issue.created ? issue.created.toDateString() : ''}
-              </FormControl.Static>
+              <FormControl.Static>{issue.created ? issue.created.toDateString() : ''}</FormControl.Static>
             </Col>
           </FormGroup>
           <FormGroup>
@@ -175,6 +205,7 @@ export default class IssueEdit extends React.Component {
                 onValidityChange={this.onValidityChange}
               />
               <FormControl.Feedback />
+
             </Col>
           </FormGroup>
           <FormGroup>
@@ -197,6 +228,10 @@ export default class IssueEdit extends React.Component {
             <Col smOffset={3} sm={9}>{validationMessage}</Col>
           </FormGroup>
         </Form>
+        <Toast showing={this.state.toastVisible}
+            message={this.state.toastMessage}
+            onDismiss={this.dismissToast} bsStyle={this.state.toastType}
+            />
       </Panel>
     );
   }
