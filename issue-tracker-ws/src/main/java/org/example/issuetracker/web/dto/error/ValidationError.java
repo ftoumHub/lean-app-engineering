@@ -1,4 +1,4 @@
-package org.example.issuetracker.dto.error;
+package org.example.issuetracker.web.dto.error;
 
 public class ValidationError {
 

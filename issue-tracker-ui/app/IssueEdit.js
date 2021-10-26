@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { Component } from 'react';
+
 import { FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Panel, Form, Col, Alert } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import NumInput from './NumInput.js';
 import DateInput from './DateInput.js';
 import Toast from './Toast.js';
 
-export default class IssueEdit extends React.Component {
+export default class IssueEdit extends Component {
 
   constructor() {
     super();

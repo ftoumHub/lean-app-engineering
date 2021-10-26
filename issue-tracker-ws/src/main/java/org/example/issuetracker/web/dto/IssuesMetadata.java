@@ -1,4 +1,4 @@
-package org.example.issuetracker.dto;
+package org.example.issuetracker.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
