@@ -1,4 +1,4 @@
-package org.example.issuetracker.exception;
+package org.example.issuetracker.configuration.exception;
 
 /**
  * Created by Ftoum on 26/09/2017.

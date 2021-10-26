@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router';
-import { Button, Glyphicon, Table, Panel } from 'react-bootstrap';
+
+import { Table, Panel } from 'react-bootstrap';
 //import mockupIssues from '../mockups/issues';
 
 import IssueRow from './IssueRow.js';

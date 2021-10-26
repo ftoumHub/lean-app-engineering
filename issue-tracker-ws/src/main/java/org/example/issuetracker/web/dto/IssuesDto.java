@@ -1,4 +1,4 @@
-package org.example.issuetracker.dto;
+package org.example.issuetracker.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.example.issuetracker.model.Issue;
@@ -12,12 +12,11 @@ import java.util.List;
 public class IssuesDto {
 
     @JsonProperty("_metadata")
-    IssuesMetadata metadata;
-
-    List<Issue> records;
+    private IssuesMetadata metadata;
+    private List<Issue> records;
 
     public IssuesDto() {
-        this.records = new ArrayList<Issue>();
+        this.records = new ArrayList<>();
         this.metadata = new IssuesMetadata();
     }
 

@@ -1,4 +1,4 @@
-package org.example.issuetracker.dto.error;
+package org.example.issuetracker.web.dto.error;
 
 import java.util.HashMap;
 import java.util.List;

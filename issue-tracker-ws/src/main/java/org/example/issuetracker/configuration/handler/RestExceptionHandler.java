@@ -1,8 +1,8 @@
-package org.example.issuetracker.handler;
+package org.example.issuetracker.configuration.handler;
 
-import org.example.issuetracker.dto.error.ErrorDetail;
-import org.example.issuetracker.dto.error.ValidationError;
-import org.example.issuetracker.exception.ResourceNotFoundException;
+import org.example.issuetracker.web.dto.error.ErrorDetail;
+import org.example.issuetracker.web.dto.error.ValidationError;
+import org.example.issuetracker.configuration.exception.ResourceNotFoundException;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

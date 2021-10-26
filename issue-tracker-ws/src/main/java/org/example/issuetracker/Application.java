@@ -15,9 +15,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-/**
- * Spring Boot main application
- */
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -34,7 +31,7 @@ public class Application implements CommandLineRunner {
         IssueRepository repository = context.getBean(IssueRepository.class);
         repository.deleteAll();
         log.info("> Inserting new data...");
-        DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
             Issue issue1 = new Issue();

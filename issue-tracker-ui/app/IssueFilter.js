@@ -8,7 +8,7 @@ import { Col, Row, FormGroup, FormControl, ControlLabel, InputGroup, ButtonToolb
  * sur les liens hypertextes. Ceci est indispensable afin d'éviter le retoure
  * vers l'URL #.
  */
-export default class IssueFilter extends React.Component {
+export default class IssueFilter extends Component {
 
   constructor(props) {
     super(props);

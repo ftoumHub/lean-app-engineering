@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-export default class DateInput extends React.Component {
+export default class DateInput extends Component {
+  
   constructor(props) {
     super(props);
     this.state = { value: this.editFormat(props.value), focused: false, valid: true };
