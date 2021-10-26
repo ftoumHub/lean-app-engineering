@@ -4,9 +4,7 @@ Issue-Tracker-WS
 Backend REST simple basé sur SpringBoot permettant de faire du CRUD
 sur une entité représentant une tâche.
 
-========================================
-Description de l'Appli
-========================================
+# Description de l'Appli
 
 Ce projet utilise une base de données embarqué H2.
 La console web est accessible à l'adresse :
@@ -25,10 +23,7 @@ La liste des issues peut être filtré par effort
 http://localhost:9191/api/issues?effort_gte=4&effort_lte=16
 
 
-
-===============================================
-Construction et lancement du conteneur Docker :
-===============================================
+# Construction et lancement du conteneur Docker
 
 docker build -t ggn/issue-tracker-ws .
 
