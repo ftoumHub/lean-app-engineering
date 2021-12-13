@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { Table, Panel } from 'react-bootstrap';
 //import mockupIssues from '../mockups/issues';
@@ -32,8 +33,8 @@ function IssueTable(props) {
 }
 
 IssueTable.propTypes = {
-  issues: React.PropTypes.array.isRequired,
-  deleteIssue: React.PropTypes.func.isRequired,
+  issues: PropTypes.array.isRequired,
+  deleteIssue: PropTypes.func.isRequired,
 };
 
 export default class IssueList extends Component {
@@ -170,6 +171,6 @@ export default class IssueList extends Component {
 }
 
 IssueList.propTypes = {
-  location: React.PropTypes.object.isRequired,
-  router: React.PropTypes.object,
+  location: PropTypes.object.isRequired,
+  router: PropTypes.object,
 };

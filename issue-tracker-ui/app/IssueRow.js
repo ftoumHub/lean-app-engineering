@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { Button, Glyphicon } from 'react-bootstrap';
 
@@ -34,6 +35,6 @@ export default class IssueRow extends Component {
 }
 
 IssueRow.propTypes = {
-  issue: React.PropTypes.object.isRequired,
-  deleteIssue: React.PropTypes.func.isRequired,
+  issue: PropTypes.object.isRequired,
+  deleteIssue: PropTypes.func.isRequired,
 };

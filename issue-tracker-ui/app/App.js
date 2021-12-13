@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {render} from 'react-dom';
 import { Router, Route, Redirect, browserHistory, withRouter } from 'react-router';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon } from 'react-bootstrap';
@@ -43,7 +44,7 @@ const App = (props) => (
 );
 
 App.propTypes = {
-  children: React.PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired,
 };
 
 const RoutedApp = () => (
