@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Col, Row, FormGroup, FormControl, ControlLabel, InputGroup, ButtonToolbar, Button } from 'react-bootstrap';
 
 /*
@@ -125,6 +126,6 @@ export default class IssueFilter extends Component {
 }
 
 IssueFilter.propTypes = {
-  setFilter: React.PropTypes.func.isRequired,
-  initFilter: React.PropTypes.object.isRequired,
+  setFilter: PropTypes.func.isRequired,
+  initFilter: PropTypes.object.isRequired,
 };

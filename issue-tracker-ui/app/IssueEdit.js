@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { FormGroup, FormControl, ControlLabel, ButtonToolbar, Button, Panel, Form, Col, Alert } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -239,5 +240,5 @@ export default class IssueEdit extends Component {
 }
 
 IssueEdit.propTypes = {
-  params: React.PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
 };

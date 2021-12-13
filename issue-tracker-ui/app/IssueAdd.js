@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Form, FormControl, Button } from 'react-bootstrap';
 
 export default class IssueAdd extends Component {
@@ -40,5 +41,5 @@ export default class IssueAdd extends Component {
 }
 
 IssueAdd.propTypes = {
-  createIssue: React.PropTypes.func.isRequired,
+  createIssue: PropTypes.func.isRequired,
 };
