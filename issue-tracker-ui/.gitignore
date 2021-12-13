@@ -8,7 +8,9 @@ coverage
 
 # production
 build
+dist
 
 # misc
 .env
+.parcel-cache
 npm-debug.log
