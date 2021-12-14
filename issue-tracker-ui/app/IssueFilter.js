@@ -95,7 +95,7 @@ export default class IssueFilter extends Component {
               <option value="New">New</option>
               <option value="Open">Open</option>
               <option value="Assigned">Assigned</option>
-              <option value="In Progress">In Progress</option>
+              <option value="In_Progress">In Progress</option>
               <option value="Done">Done</option>
             </FormControl>
           </FormGroup>
