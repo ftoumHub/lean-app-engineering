@@ -8,6 +8,7 @@ import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class IssueService {
@@ -44,7 +45,7 @@ public class IssueService {
      * @param id An issue primary key identifier.
      * @return An Issue entity or null if not found.
      */
-    public Issue find(Long id) {
+    public Issue find(UUID id) {
         logger.info("> find id:{}", id);
 
         counterService.increment("services.issueservice.find.invoked");
@@ -91,7 +92,7 @@ public class IssueService {
      * Delete an Issue entity from the data repository.
      * @param id The primary key identifier of the issue to delete.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         logger.info("> delete");
 
         counterService.increment("services.issueservice.delete.invoked");

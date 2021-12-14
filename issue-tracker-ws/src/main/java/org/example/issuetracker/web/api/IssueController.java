@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -85,7 +86,7 @@ public class IssueController {
      * @return
      */
     @RequestMapping(value = "/issues/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> getIssue(@PathVariable("id") Long id) {
+    public ResponseEntity<?> getIssue(@PathVariable("id") UUID id) {
         logger.info("> getIssue with id : " + id);
 
         Issue issue = null;
@@ -142,7 +143,7 @@ public class IssueController {
     }
 
     @RequestMapping(value = "/issues/{id}", method = DELETE)
-    public ResponseEntity<Issue> deleteIssue(@PathVariable("id") Long issueId) {
+    public ResponseEntity<Issue> deleteIssue(@PathVariable("id") UUID issueId) {
         logger.info("> deleteIssue");
 
         try {
@@ -157,7 +158,7 @@ public class IssueController {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
-    protected void verifyIssue(Long issueId) throws ResourceNotFoundException {
+    protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
         Issue issue = issueService.find(issueId);
         // if no issue found, return 404 status code
         if(issue == null) {
