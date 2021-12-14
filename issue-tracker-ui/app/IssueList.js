@@ -12,7 +12,7 @@ import IssueFilter from './IssueFilter.js';
 // Un composant plus classique avec un return,
 // indispensable lorsque la fonction comprend plus d'une instruction
 function IssueTable(props) {
-  const issueRows = props.issues.map(issue => <IssueRow key={issue.id} issue={issue} deleteIssue={props.deleteIssue}/>)
+  const issueRows = props.issues.map(issue => <IssueRow key={issue.id} issue={issue}/>)
   return (
     <Table bordered condensed hover responsive>
       <thead>
@@ -33,8 +33,7 @@ function IssueTable(props) {
 }
 
 IssueTable.propTypes = {
-  issues: PropTypes.array.isRequired,
-  deleteIssue: PropTypes.func.isRequired,
+  issues: PropTypes.array.isRequired
 };
 
 export default class IssueList extends Component {
@@ -47,7 +46,6 @@ export default class IssueList extends Component {
       toastVisible: false, toastMessage: '', toastType: 'success',
     };
     this.setFilter = this.setFilter.bind(this);
-    this.deleteIssue = this.deleteIssue.bind(this);
     this.showError = this.showError.bind(this);
     this.dismissToast = this.dismissToast.bind(this);
   }
@@ -116,16 +114,6 @@ export default class IssueList extends Component {
     this.props.router.push({ pathname: this.props.location.pathname, query });
   }
 
-  deleteIssue(id) {
-    fetch(`/api/issues/${id}`, { method: 'DELETE' }).then(response => {
-      if (!response.ok){
-        alert('Failed to delete issue');
-      } else {
-        this.loadData();
-      }
-    });
-  }
-
   render() {
     return (
       <div>
@@ -133,7 +121,7 @@ export default class IssueList extends Component {
           <IssueFilter setFilter={this.setFilter} initFilter={this.props.location.query} />
         </Panel>
         <hr />
-        <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue}/>
+        <IssueTable issues={this.state.issues}/>
         <hr />
         
       </div>
@@ -142,6 +130,5 @@ export default class IssueList extends Component {
 }
 
 IssueList.propTypes = {
-  location: PropTypes.object.isRequired,
-  router: PropTypes.object,
+  location: PropTypes.object.isRequired
 };

@@ -17,21 +17,26 @@ class IssueAddNavItem extends React.Component {
         this.showError = this.showError.bind(this);
         this.dismissToast = this.dismissToast.bind(this);
     }
+
     showModal() {
         this.setState({ showing: true });
     }
+
     hideModal() {
         this.setState({ showing: false });
     }
+
     showError(message) {
         this.setState({
             toastVisible: true, toastMessage: message,
             toastType: 'danger'
         });
     }
+
     dismissToast() {
         this.setState({ toastVisible: false });
     }
+
     submit(e) {
         e.preventDefault();
         this.hideModal();
@@ -56,31 +61,33 @@ class IssueAddNavItem extends React.Component {
             this.showError(`Error in sending data to server: ${err.message}`);
         });
     }
+    
     render() {
         return (
-            <NavItem onClick={this.showModal}><Glyphicon glyph="plus" /> Create Issue <Modal keyboard show={this.state.showing} onHide={this.hideModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Create Issue</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form name="issueAdd">
-                        <FormGroup>
-                            <ControlLabel>Title</ControlLabel>
-                            <FormControl name="title" autoFocus />
-                        </FormGroup>
-                        <FormGroup>
-                            <ControlLabel>Owner</ControlLabel>
-                            <FormControl name="owner" />
-                        </FormGroup>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <ButtonToolbar>
-                        <Button type="button" bsStyle="primary" onClick={this.submit}>Submit</Button>
-                        <Button bsStyle="link" onClick={this.hideModal}>Cancel</Button>
-                    </ButtonToolbar>
-                </Modal.Footer>
-            </Modal>
+            <NavItem onClick={this.showModal}><Glyphicon glyph="plus" /> Create Issue
+                <Modal keyboard show={this.state.showing} onHide={this.hideModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create Issue</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form name="issueAdd">
+                            <FormGroup>
+                                <ControlLabel>Title</ControlLabel>
+                                <FormControl name="title" autoFocus />
+                            </FormGroup>
+                            <FormGroup>
+                                <ControlLabel>Owner</ControlLabel>
+                                <FormControl name="owner" />
+                            </FormGroup>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <ButtonToolbar>
+                            <Button type="button" bsStyle="primary" onClick={this.submit}>Submit</Button>
+                            <Button bsStyle="link" onClick={this.hideModal}>Cancel</Button>
+                        </ButtonToolbar>
+                    </Modal.Footer>
+                </Modal>
                 <Toast showing={this.state.toastVisible} message={this.state.toastMessage}
                     onDismiss={this.dismissToast} bsStyle={this.state.toastType}
                 />
