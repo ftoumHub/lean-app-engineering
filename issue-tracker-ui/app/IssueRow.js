@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
-import { Button, Glyphicon } from 'react-bootstrap';
+import IssueDelItem from './IssueDelItem';
 
 
 export default class IssueRow extends Component {
   constructor() {
     super();
-    this.onDeleteClick = this.onDeleteClick.bind(this);
-  }
-
-  onDeleteClick() {
-    this.props.deleteIssue(this.props.issue.id);
   }
 
   render() {
@@ -26,15 +21,12 @@ export default class IssueRow extends Component {
         <td>{issue.effort}</td>
         <td>{issue.completionDate ? issue.completionDate.toDateString() : ''}</td>
         <td>{issue.title}</td>
-        <td>
-          <Button bsSize="xsmall" onClick={this.onDeleteClick}><Glyphicon glyph="trash" /></Button>
-        </td>
+        <td><IssueDelItem issue={issue.id}/></td>
       </tr>
     );
   }
 }
 
 IssueRow.propTypes = {
-  issue: PropTypes.object.isRequired,
-  deleteIssue: PropTypes.func.isRequired,
+  issue: PropTypes.object.isRequired
 };
