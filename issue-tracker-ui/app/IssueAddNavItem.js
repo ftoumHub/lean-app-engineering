@@ -46,9 +46,7 @@ class IssueAddNavItem extends React.Component {
             body: JSON.stringify(newIssue),
         }).then(response => {
             if (response.ok) {
-                response.json().then(updatedIssue => {
-                    this.props.router.push(`/issues/${updatedIssue._id}`);
-                });
+                window.location.reload(false);
             } else {
                 response.json().then(error => {
                     this.showError(`Failed to add issue: ${error.message}`);
