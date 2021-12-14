@@ -1,6 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
-import { NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Button, ButtonToolbar } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import { NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, FormSelect, ControlLabel, Button, ButtonToolbar } from 'react-bootstrap';
 import Toast from './Toast.js';
 
 class IssueAddNavItem extends React.Component {
@@ -90,6 +91,6 @@ class IssueAddNavItem extends React.Component {
     }
 }
 IssueAddNavItem.propTypes = {
-    router: React.PropTypes.object,
+    router: PropTypes.object,
 };
 export default withRouter(IssueAddNavItem);
