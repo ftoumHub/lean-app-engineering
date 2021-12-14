@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import PropTypes from 'prop-types';
+import PropTypes, { node } from 'prop-types';
 import { NavItem, Glyphicon, Modal, Button, ButtonToolbar } from 'react-bootstrap';
 import Toast from './Toast.js';
 
@@ -61,8 +61,8 @@ class IssueDelItem extends Component {
     }
     render() {
         return (
-            <NavItem onClick={this.showModal}>
-                <Button bsSize="xsmall"><Glyphicon glyph="trash" /></Button>
+            <NavItem style={{ listStyle:'none'}} onClick={this.showModal}>
+                <Button bsSize="xsmall"><Glyphicon glyph="trash"/></Button>
                 <Modal keyboard show={this.state.showing} onHide={this.hideModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>Delete Issue</Modal.Title>
