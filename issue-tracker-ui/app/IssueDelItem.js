@@ -59,6 +59,7 @@ class IssueDelItem extends Component {
         this.hideModal();
         this.onDeleteClick();
     }
+    
     render() {
         return (
             <NavItem style={{ listStyle:'none'}} onClick={this.showModal}>

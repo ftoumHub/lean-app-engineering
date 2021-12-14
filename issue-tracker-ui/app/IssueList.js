@@ -45,8 +45,7 @@ export default class IssueList extends Component {
       issues: [],
       toastVisible: false, toastMessage: '', toastType: 'success',
     };
-    this.createIssue = this.createIssue.bind(this);
-    this.setFilter = this.setFilter.bind(this)
+    this.setFilter = this.setFilter.bind(this);
     this.showError = this.showError.bind(this);
     this.dismissToast = this.dismissToast.bind(this);
   }
@@ -106,35 +105,7 @@ export default class IssueList extends Component {
     });
   }
 
-  // Création et envoi au serveur d'une nouvelle 'issue'
-  createIssue(newIssue) {
-    fetch('/api/issues', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newIssue),
-    }).then(response => {
-      if (response.ok) {
-        response.json().then(updatedIssue => {
-          updatedIssue.created = new Date(updatedIssue.created);
-          if (updatedIssue.completionDate) {
-            updatedIssue.completionDate = new Date(updatedIssue.completionDate);
-          }
-          // le state est immuable, on utilise la fonction concat qui retourne
-          // une copie de la liste à laquelle on ajoute un élément
-          const newIssues = this.state.issues.concat(updatedIssue);
-          this.setState({
-            issues: newIssues
-          });
-        });
-      } else {
-        response.json().then(error => {
-          alert("Failed to add issue: " + error.message)
-        });
-      }
-    }).catch(err => {
-      alert("Error in sending data to server: " + err.message);
-    });
-  }
+  
 
   // la méthode setFilter prend en paramètre un objet query du type : { status: 'Open' }
   // on utilise la méthode push du router pour changer la query string en conservant le
@@ -152,7 +123,7 @@ export default class IssueList extends Component {
         <hr />
         <IssueTable issues={this.state.issues}/>
         <hr />
-        <IssueAdd createIssue={this.createIssue}/>
+        
       </div>
     );
   }

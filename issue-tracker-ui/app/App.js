@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {render} from 'react-dom';
+import { render } from 'react-dom';
 import { Router, Route, Redirect, browserHistory, withRouter } from 'react-router';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Glyphicon } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -8,6 +8,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 import IssueList from './IssueList.js';
 import IssueEdit from './IssueEdit.js';
+import IssueAddNavItem from './IssueAddNavItem.js';
 
 const NoMatch = () => <p>Page Not Found</p>;
 
@@ -25,7 +26,7 @@ const Header = () => (
       </LinkContainer>
     </Nav>
     <Nav pullRight>
-      <NavItem><Glyphicon glyph="plus" /> Create Issue</NavItem>
+      <IssueAddNavItem />
       <NavDropdown id="user-dropdown" title={<Glyphicon glyph="option-horizontal" />} noCaret>
         <MenuItem>Logout</MenuItem>
       </NavDropdown>
