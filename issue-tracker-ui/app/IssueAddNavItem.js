@@ -10,10 +10,13 @@ class IssueAddNavItem extends React.Component {
         this.state = {
             showing: false,
             toastVisible: false, toastMessage: '', toastType: 'success',
+            error: false
         };
         this.showModal = this.showModal.bind(this);
         this.hideModal = this.hideModal.bind(this);
         this.submit = this.submit.bind(this);
+        this.displayError = this.displayError.bind(this);
+        this.hideError = this.hideError.bind(this);
         this.showError = this.showError.bind(this);
         this.dismissToast = this.dismissToast.bind(this);
     }
@@ -37,32 +40,52 @@ class IssueAddNavItem extends React.Component {
         this.setState({ toastVisible: false });
     }
 
+    displayError() {
+        this.setState({ error: true });
+    }
+
+    hideError() {
+        this.setState({ error: false });
+    }
+
     submit(e) {
         e.preventDefault();
-        this.hideModal();
         const form = document.forms.issueAdd;
         const newIssue = {
             owner: form.owner.value, title: form.title.value,
             status: 'NEW', created: new Date(),
         };
-        fetch('/api/issues', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newIssue),
-        }).then(response => {
-            if (response.ok) {
-                window.location.reload(false);
-            } else {
-                response.json().then(error => {
-                    this.showError(`Failed to add issue: ${error.message}`);
-                });
-            }
-        }).catch(err => {
-            this.showError(`Error in sending data to server: ${err.message}`);
-        });
+        if (form.title.value !== "") {
+            this.hideModal();
+            fetch('/api/issues', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newIssue),
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload(false);
+                } else {
+                    response.json().then(error => {
+                        this.showError(`Failed to add issue: ${error.message}`);
+                    });
+                }
+            }).catch(err => {
+                this.showError(`Error in sending data to server: ${err.message}`);
+            });
+        }
+        else {
+            this.displayError();
+        }
     }
-    
+
     render() {
+        let button;
+        if (this.state.error) {
+            button = <ControlLabel style={{color:"red"}}>The field title is missing</ControlLabel>;
+        }
+        else {
+            button = null;
+        }
         return (
             <NavItem onClick={this.showModal}><Glyphicon glyph="plus" /> Create Issue
                 <Modal keyboard show={this.state.showing} onHide={this.hideModal}>
@@ -73,7 +96,8 @@ class IssueAddNavItem extends React.Component {
                         <Form name="issueAdd">
                             <FormGroup>
                                 <ControlLabel>Title</ControlLabel>
-                                <FormControl name="title" autoFocus />
+                                <FormControl name="title" autoFocus required />
+                                {button}
                             </FormGroup>
                             <FormGroup>
                                 <ControlLabel>Owner</ControlLabel>
@@ -88,9 +112,6 @@ class IssueAddNavItem extends React.Component {
                         </ButtonToolbar>
                     </Modal.Footer>
                 </Modal>
-                <Toast showing={this.state.toastVisible} message={this.state.toastMessage}
-                    onDismiss={this.dismissToast} bsStyle={this.state.toastType}
-                />
             </NavItem >
         );
     }

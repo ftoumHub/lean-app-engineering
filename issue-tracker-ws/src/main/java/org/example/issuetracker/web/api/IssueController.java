@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -113,12 +114,19 @@ public class IssueController {
         logger.info("> createIssue");
 
         Issue createdIssue = null;
-        try {
-            createdIssue = issueService.create(issue);
-        } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
-            return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+        if(!Objects.equals(issue.getTitle(), " ")){
+            try {
+                createdIssue = issueService.create(issue);
+            } catch (Exception e) {
+                logger.error("Unexpected Exception caught.", e);
+                return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+            }
         }
+        else{
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
 
         logger.info("< createIssue");
         return new ResponseEntity<>(createdIssue, HttpStatus.CREATED);
