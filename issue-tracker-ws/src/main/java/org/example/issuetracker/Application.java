@@ -3,7 +3,9 @@ package org.example.issuetracker;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Random;
 
+import com.github.javafaker.Faker;
 import org.example.issuetracker.model.Issue;
 import org.example.issuetracker.model.IssueStatus;
 import org.example.issuetracker.repository.IssueRepository;
@@ -32,8 +34,20 @@ public class Application implements CommandLineRunner {
         repository.deleteAll();
         log.info("> Inserting new data...");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
         try {
+            Faker faker = new Faker();
+
+            for (int i = 0; i < 100; i++) {
+
+                Issue fakeIssue = new Issue();
+                fakeIssue.setTitle(faker.lorem().sentence(10));
+                fakeIssue.setEffort(faker.number().numberBetween(1, 8));
+                fakeIssue.setStatus(IssueStatus.values()[new Random().nextInt(IssueStatus.values().length)]);
+                fakeIssue.setOwner(faker.name().fullName());
+                fakeIssue.setCreated(faker.date().birthday());
+
+                repository.save(fakeIssue);
+            }
             Issue issue1 = new Issue();
             issue1.setStatus(IssueStatus.IN_PROGRESS);
             issue1.setOwner("Guillaume");
