@@ -2,7 +2,6 @@ package org.example.issuetracker.web.api;
 
 import org.example.issuetracker.configuration.exception.ResourceNotFoundException;
 import org.example.issuetracker.model.Issue;
-import org.example.issuetracker.model.IssueStatus;
 import org.example.issuetracker.service.IssueService;
 import org.example.issuetracker.web.dto.IssuesDto;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ public class IssueController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private IssueService issueService;
+    private final IssueService issueService;
 
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
@@ -67,7 +66,7 @@ public class IssueController {
     }
 
     private Predicate<Issue> getIssueWithStatus(String status) {
-        return issue -> issue.getStatus().equals(IssueStatus.valueOf(status.toUpperCase().replaceAll("\\s", "_")));
+        return issue -> issue.getStatus().toStatus().equals(status);
     }
 
     private Predicate<Issue> getIssueWithEffortLowerThan(Integer effortLte) {
