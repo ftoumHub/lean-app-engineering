@@ -15,18 +15,7 @@ public class StatusController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(value = "/status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public IssueStatus getAllStatus() {
-        return valueOfOrDefault(IssueStatus.values());
+    public IssueStatus[] getAllStatus() {
+        return IssueStatus.values();
     }
-
-    public static IssueStatus valueOfOrDefault(IssueStatus[] myValue) {
-        String value=myValue.toString().toUpperCase().replaceAll("\\s", "_");
-        for(IssueStatus status : IssueStatus.class.getEnumConstants()) {
-            if(status.toString().equals(myValue)) {
-                return status;
-            }
-        }
-        throw new IllegalArgumentException("JournalType not found");
-    }
-
 }
