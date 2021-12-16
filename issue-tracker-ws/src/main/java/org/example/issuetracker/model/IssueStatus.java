@@ -8,13 +8,17 @@ public enum IssueStatus {
     DONE("Done");
 
     private final String status;
-    
+
     IssueStatus(String status) {
         this.status = status;
     }
 
-    public String toStatus() {
-        return status;
+    public static IssueStatus fromStatus(String value) {
+        for (IssueStatus stat : IssueStatus.values()) {
+            if (stat.status.equals(value))
+                return stat;
+        }
+        throw new IllegalStateException(String.format("Unsupported type %s.", value));
     }
 
 }
