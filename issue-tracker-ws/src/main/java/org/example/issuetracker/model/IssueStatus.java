@@ -1,5 +1,7 @@
 package org.example.issuetracker.model;
 
+import java.util.Arrays;
+
 public enum IssueStatus {
     NEW("New"),
     OPEN("Open"),
@@ -13,12 +15,11 @@ public enum IssueStatus {
         this.status = status;
     }
 
-    public static IssueStatus fromStatus(String value) {
-        for (IssueStatus stat : IssueStatus.values()) {
-            if (stat.status.equals(value))
-                return stat;
-        }
-        throw new IllegalStateException(String.format("Unsupported type %s.", value));
+    public static IssueStatus fromStatus(String status) {
+        return Arrays.stream(IssueStatus.values())
+                .filter(s -> s.status.equalsIgnoreCase(status))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Le status " + status + " est inconnu dans IssueStatus"));
     }
 
 }
