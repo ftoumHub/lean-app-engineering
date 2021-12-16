@@ -26,7 +26,7 @@ public class IssueController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private IssueService issueService;
+    private final IssueService issueService;
 
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
@@ -68,7 +68,7 @@ public class IssueController {
     }
 
     private Predicate<Issue> getIssueWithStatus(String status) {
-        return issue -> issue.getStatus().equals(IssueStatus.valueOf(status.toUpperCase()));
+        return issue -> issue.getStatus().equals(IssueStatus.fromStatus(status));
     }
 
     private Predicate<Issue> getIssueWithEffortLowerThan(Integer effortLte) {
@@ -165,5 +165,4 @@ public class IssueController {
             throw new ResourceNotFoundException("Issue with id " + issueId + " not found");
         }
     }
-
 }
