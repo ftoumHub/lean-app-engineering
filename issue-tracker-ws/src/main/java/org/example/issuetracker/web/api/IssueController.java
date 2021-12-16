@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -35,7 +35,7 @@ public class IssueController {
     /**
      * Retourne la liste des issues
      */
-    @RequestMapping(value = "/issues", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/issues", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<IssuesDto> getAllIssues(@RequestParam(required = false, value = "status") final String status,
                                                   @RequestParam(required = false, value = "effort_gte") final Integer effortGte,
                                                   @RequestParam(required = false, value = "effort_lte") final Integer effortLte) {
@@ -85,11 +85,11 @@ public class IssueController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/issues/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/issues/{id}")
     public ResponseEntity<?> getIssue(@PathVariable("id") UUID id) {
         logger.info("> getIssue with id : " + id);
 
-        Issue issue = null;
+        Optional<Issue> issue = null;
 
         try {
             verifyIssue(id);
@@ -109,7 +109,7 @@ public class IssueController {
      * @param issue
      * @return
      */
-    @RequestMapping(value = "/issues", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/issues", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Issue> createIssue(@RequestBody Issue issue) {
         logger.info("> createIssue");
 
@@ -125,7 +125,7 @@ public class IssueController {
         return new ResponseEntity<>(createdIssue, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/issues/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/issues/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Issue> updateIssue(@RequestBody Issue issue) {
         logger.info("> updateIssue");
 
@@ -142,7 +142,7 @@ public class IssueController {
         return new ResponseEntity<>(updatedIssue, OK);
     }
 
-    @RequestMapping(value = "/issues/{id}", method = DELETE)
+    @DeleteMapping(value = "/issues/{id}")
     public ResponseEntity<Issue> deleteIssue(@PathVariable("id") UUID issueId) {
         logger.info("> deleteIssue");
 
@@ -158,8 +158,8 @@ public class IssueController {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
-    protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
-        Issue issue = issueService.find(issueId);
+    protected void verifyIssue(Long issueId) throws ResourceNotFoundException {
+        Optional<Issue> issue = issueService.find(issueId);
         // if no issue found, return 404 status code
         if(issue == null) {
             throw new ResourceNotFoundException("Issue with id " + issueId + " not found");
