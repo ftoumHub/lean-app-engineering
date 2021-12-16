@@ -89,14 +89,14 @@ public class IssueController {
     public ResponseEntity<?> getIssue(@PathVariable("id") UUID id) {
         logger.info("> getIssue with id : " + id);
 
-        Optional<Issue> issue = null;
+        Optional<Issue> issue;
 
         try {
             verifyIssue(id);
             issue = issueService.find(id);
         } catch (Exception e) {
             logger.error("Unexpected Exception caught.", e);
-            return new ResponseEntity<>(issue, INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
         logger.info("< getIssue");
@@ -158,10 +158,10 @@ public class IssueController {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
-    protected void verifyIssue(Long issueId) throws ResourceNotFoundException {
+    protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
         Optional<Issue> issue = issueService.find(issueId);
         // if no issue found, return 404 status code
-        if(issue == null) {
+        if(!issue.isPresent()) {
             throw new ResourceNotFoundException("Issue with id " + issueId + " not found");
         }
     }

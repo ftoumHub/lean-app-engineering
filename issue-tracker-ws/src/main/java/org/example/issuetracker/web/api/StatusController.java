@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api")
 public class StatusController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @GetMapping(value = "/status", produces = MediaType.APPLICATION_JSON_VALUE)
     public IssueStatus[] getAllStatus() {
         return IssueStatus.values();
