@@ -18,5 +18,4 @@ public class StatusController {
     public IssueStatus[] getAllStatus() {
         return IssueStatus.values();
     }
-
 }
