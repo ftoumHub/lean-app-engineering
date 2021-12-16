@@ -1,6 +1,5 @@
 package org.example.issuetracker.model;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
