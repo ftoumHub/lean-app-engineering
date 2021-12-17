@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.Optional;
 
 @Service
@@ -46,7 +47,7 @@ public class IssueService {
      * @param id An issue primary key identifier.
      * @return An Issue entity or null if not found.
      */
-    public Optional<Issue> find(Long id) {
+    public Optional<Issue> find(UUID id) {
         logger.info("> find id:{}", id);
 
         counterService.counter("services.issueservice.find.invoked");
@@ -93,7 +94,7 @@ public class IssueService {
      * Delete an Issue entity from the data repository.
      * @param id The primary key identifier of the issue to delete.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         logger.info("> delete");
 
         counterService.counter("services.issueservice.delete.invoked");
