@@ -92,16 +92,19 @@ public class IssueController {
         Optional<Issue> issue;
 
         try {
+
             verifyIssue(id);
             issue = issueService.find(id);
+
         } catch (Exception e) {
             logger.error("Unexpected Exception caught.", e);
-            return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e, INTERNAL_SERVER_ERROR);
         }
 
         logger.info("< getIssue");
         return new ResponseEntity<>(issue, OK);
     }
+
 
     /**
      * Ajoute une question.
@@ -113,7 +116,7 @@ public class IssueController {
     public ResponseEntity<Issue> createIssue(@RequestBody Issue issue) {
         logger.info("> createIssue");
 
-        Issue createdIssue = null;
+        Issue createdIssue;
         try {
             createdIssue = issueService.create(issue);
         } catch (Exception e) {
@@ -159,10 +162,17 @@ public class IssueController {
     }
 
     protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
+        try {
+            issueId.toString().matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("This id " + issueId + " isn't an UUID");
+        }
         Optional<Issue> issue = issueService.find(issueId);
+
         // if no issue found, return 404 status code
-        if(!issue.isPresent()) {
+        if (!issue.isPresent()) {
             throw new ResourceNotFoundException("Issue with id " + issueId + " not found");
         }
+
     }
 }
