@@ -10,8 +10,6 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
-import org.springframework.boot.test.json.ObjectContent;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,14 +56,10 @@ class IssueControllerTest {
         issue1.setOwner("Guillaume");
         issue1.setCreated(df.parse("2017-09-29"));
         issue1.setEffort(1);
-        issue1.setTitle("Tester le générateur d'appli FUN");
-
-        issueRepository.save(issue1);
-        jsonIssue.write(issue1);
+        issue1.setTitle("Tester le generateur d'appli FUN");
 
         // given
         given(issueRepository.findById(issue1.getId())).willReturn(Optional.of(issue1));
-
 
         // when
         MockHttpServletResponse response = mvc.perform(get(format("/api/issues/%s", issue1.getId())).accept(APPLICATION_JSON))
@@ -73,28 +67,33 @@ class IssueControllerTest {
 
         // then
         assertThat(response.getStatus()).isEqualTo(OK.value());
-        //assertThat(response.getContentAsString()).isEqualTo(.getJson());
+
+        //Le test passe si et seulement is il n'y a pas d'accent (Non présence de paramètre UTF-8)
+        assertThat(response.getContentAsString()).isEqualTo(jsonIssue.write(issue1).getJson());
     }
 
     @Test
     void throwsResourceNotFoundExceptionWhenDoesNotExist() throws Exception {
-        UUID uuid = UUID.randomUUID();
+
+        Issue issue1 = new Issue();
+        issue1.setId(UUID.randomUUID());
 
         // given
-        given(issueRepository.findById(uuid))
-                .willThrow(new ResourceNotFoundException(format("Issue with id %s not found", uuid)));
-
+        given(issueRepository.findById(issue1.getId()))
+                .willThrow(new ResourceNotFoundException(format("Issue with id %s not found", issue1.getId())));
 
         // when
-        MockHttpServletResponse response = mvc.perform(get(format("/api/issues/%s", uuid)).accept(APPLICATION_JSON))
+        MockHttpServletResponse response = mvc.perform(get(format("/api/issues/%s", issue1.getId())).accept(APPLICATION_JSON))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(NOT_FOUND.value());
 
-        //final String errorAsString = response.getContentAsString();
-        // ....;
-        //assertThat(errorAsString).isEqualTo(.getJson());
+        final String errorAsString = response.getContentAsString();
+        // ....
+
+        // Je ne vois pas sur quoi il faut récupérer le json alors que ça doit corresponre à une chaine de caractère
+        assertThat(errorAsString).isEqualTo("Can't find " + issue1.getId());
     }
 
     @Test
