@@ -96,7 +96,7 @@ public class IssueController {
             issue = issueService.find(id);
         } catch (Exception e) {
             logger.error("Unexpected Exception caught.", e);
-            return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Can't find " + id, NOT_FOUND);
         }
 
         logger.info("< getIssue");
