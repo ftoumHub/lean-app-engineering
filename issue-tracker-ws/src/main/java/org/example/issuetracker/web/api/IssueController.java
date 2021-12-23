@@ -92,15 +92,8 @@ public class IssueController {
 
         Optional<Issue> issue;
 
-        try {
-
-            verifyIssue(id);
-            issue = issueService.find(id);
-
-        } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
-            return new ResponseEntity<>(e, NOT_FOUND);
-        }
+        verifyIssue(id);
+        issue = issueService.find(id);
 
         logger.info("< getIssue");
         return new ResponseEntity<>(issue, OK);
@@ -163,17 +156,9 @@ public class IssueController {
     }
 
     protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
-        //if (!issueId.toString().matches("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$")) {
-        if(!issueId.toString().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")){
-            throw new ResponseStatusException(BAD_REQUEST, "This id " + issueId + " isn't an UUID");
-        } else {
-            Optional<Issue> issue = issueService.find(issueId);
-
-            // if no issue found, return 404 status code
-            if (!issue.isPresent()) {
-                throw new ResourceNotFoundException("Issue with id " + issueId + " not found");
-            }
-        }
-
+        issueService.find(issueId)
+                .orElseThrow(() -> new ResourceNotFoundException("Issue with id " + issueId + " not found"));
     }
+
+
 }

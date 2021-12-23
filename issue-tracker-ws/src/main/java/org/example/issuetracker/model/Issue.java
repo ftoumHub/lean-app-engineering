@@ -1,5 +1,6 @@
 package org.example.issuetracker.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 
 @Data
 @Entity(name = "TACHE")
+@AllArgsConstructor
 public class Issue {
 
     @Id
