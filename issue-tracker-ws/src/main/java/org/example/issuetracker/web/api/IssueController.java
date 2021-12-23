@@ -32,6 +32,9 @@ public class IssueController {
         this.issueService = issueService;
     }
 
+    static final String ERROR = "Unexpected Exception caught.";
+
+
     /**
      * Retourne la liste des issues
      */
@@ -59,7 +62,7 @@ public class IssueController {
             issuesDto.setRecords(issues);
             issuesDto.getMetadata().setTotalCount(issues.size());
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(issuesDto, INTERNAL_SERVER_ERROR);
         }
 
@@ -108,11 +111,11 @@ public class IssueController {
     public ResponseEntity<Issue> createIssue(@RequestBody Issue issue) {
         logger.info("> createIssue");
 
-        Issue createdIssue = null;
+        Issue createdIssue;
         try {
             createdIssue = issueService.create(issue);
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
@@ -124,12 +127,12 @@ public class IssueController {
     public ResponseEntity<Issue> updateIssue(@RequestBody Issue issue) {
         logger.info("> updateIssue");
 
-        Issue updatedIssue = null;
+        Issue updatedIssue;
         try {
             verifyIssue(issue.getId());
             updatedIssue = issueService.update(issue);
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
@@ -145,7 +148,7 @@ public class IssueController {
             verifyIssue(issueId);
             issueService.delete(issueId);
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
