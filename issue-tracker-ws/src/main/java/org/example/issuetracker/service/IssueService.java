@@ -1,13 +1,15 @@
 package org.example.issuetracker.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.example.issuetracker.model.Issue;
 import org.example.issuetracker.repository.IssueRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class IssueService {
@@ -15,10 +17,10 @@ public class IssueService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private IssueRepository issueRepository;
-    private CounterService counterService;
+    private MeterRegistry counterService;
 
     public IssueService(IssueRepository issueRepository,
-                        CounterService counterService) {
+                        MeterRegistry counterService) {
         this.issueRepository = issueRepository;
         this.counterService = counterService;
     }
@@ -30,7 +32,8 @@ public class IssueService {
     public List<Issue> findAll() {
         logger.info("> findAll");
 
-        counterService.increment("services.issueservice.findAll.invoked");
+        counterService.counter("services.issueservice.findAll.invoked");
+
 
         List<Issue> issues = issueRepository.findAll();
 
@@ -44,12 +47,12 @@ public class IssueService {
      * @param id An issue primary key identifier.
      * @return An Issue entity or null if not found.
      */
-    public Issue find(Long id) {
+    public Optional<Issue> find(UUID id) {
         logger.info("> find id:{}", id);
 
-        counterService.increment("services.issueservice.find.invoked");
+        counterService.counter("services.issueservice.find.invoked");
 
-        Issue issue = issueRepository.findOne(id);
+        Optional<Issue> issue = issueRepository.findById(id);
 
         logger.info("< find id:{}", id);
         return issue;
@@ -63,7 +66,7 @@ public class IssueService {
     public Issue create(Issue issue) {
         logger.info("> create");
 
-        counterService.increment("services.issueservice.create.invoked");
+        counterService.counter("services.issueservice.create.invoked");
 
         Issue persistedIssue = issueRepository.save(issue);
 
@@ -79,7 +82,7 @@ public class IssueService {
     public Issue update(Issue issue) {
         logger.info("> update");
 
-        counterService.increment("services.issueservice.update.invoked");
+        counterService.counter("services.issueservice.update.invoked");
 
         Issue updatedIssue = issueRepository.save(issue);
 
@@ -91,12 +94,12 @@ public class IssueService {
      * Delete an Issue entity from the data repository.
      * @param id The primary key identifier of the issue to delete.
      */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         logger.info("> delete");
 
-        counterService.increment("services.issueservice.delete.invoked");
+        counterService.counter("services.issueservice.delete.invoked");
 
-        issueRepository.delete(id);
+        issueRepository.deleteById(id);
 
         logger.info("< delete");
     }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,8 +23,11 @@ import java.util.List;
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Inject
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
+
+    public RestExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException rnfe, HttpServletRequest request) {
@@ -55,11 +57,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         List<FieldError> fieldErrors =  manve.getBindingResult().getFieldErrors();
         for(FieldError fe : fieldErrors) {
 
-            List<ValidationError> validationErrorList = errorDetail.getErrors().get(fe.getField());
-            if(validationErrorList == null) {
-                validationErrorList = new ArrayList<ValidationError>();
-                errorDetail.getErrors().put(fe.getField(), validationErrorList);
-            }
+            List<ValidationError> validationErrorList = errorDetail.getErrors().computeIfAbsent(fe.getField(), k -> new ArrayList<ValidationError>());
             ValidationError validationError = new ValidationError();
             validationError.setCode(fe.getCode());
             validationError.setMessage(messageSource.getMessage(fe, null));
