@@ -11,6 +11,7 @@ La console web est accessible à l'adresse :
 http://localhost:9191/console
 Pour les paramètres de connexion se référer au fichier application.properties
 
+A l'adresse http://localhost:9191/swagger-ui.html#/issue-controller on va trouver le swagger correspondant aux différents endpoint de IssueController
 
 A l'adresse http://localhost:9191/api/issues on va trouver la liste des 'issues' au format JSON
 
