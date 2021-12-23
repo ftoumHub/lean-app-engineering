@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
@@ -42,21 +43,11 @@ class IssueControllerTest {
     @Autowired
     private JacksonTester<Issue> jsonIssue;
 
+    final Issue issue1 = new Issue(UUID.randomUUID(), "Tester le générateur d'appli FUN", "Guillaume", null, 1, null, IssueStatus.NEW);
     // ...
 
     @Test
     void canRetrieveByUuidWhenExists() throws Exception {
-        // ...
-        // ...
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-        Issue issue1 = new Issue();
-        issue1.setId(UUID.randomUUID());
-        issue1.setStatus(IssueStatus.IN_PROGRESS);
-        issue1.setOwner("Guillaume");
-        issue1.setCreated(df.parse("2017-09-29"));
-        issue1.setEffort(1);
-        issue1.setTitle("Tester le generateur d'appli FUN");
 
         // given
         given(issueRepository.findById(issue1.getId())).willReturn(Optional.of(issue1));
@@ -68,15 +59,11 @@ class IssueControllerTest {
         // then
         assertThat(response.getStatus()).isEqualTo(OK.value());
 
-        //Le test passe si et seulement is il n'y a pas d'accent (Non présence de paramètre UTF-8)
-        assertThat(response.getContentAsString()).isEqualTo(jsonIssue.write(issue1).getJson());
+        assertThat(response.getContentAsString(StandardCharsets.UTF_8)).isEqualTo(jsonIssue.write(issue1).getJson());
     }
 
     @Test
     void throwsResourceNotFoundExceptionWhenDoesNotExist() throws Exception {
-
-        Issue issue1 = new Issue();
-        issue1.setId(UUID.randomUUID());
 
         // given
         given(issueRepository.findById(issue1.getId()))
@@ -98,16 +85,6 @@ class IssueControllerTest {
 
     @Test
     void canCreateANewIssue() throws Exception {
-
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-        Issue issue1 = new Issue();
-        issue1.setId(UUID.randomUUID());
-        issue1.setStatus(IssueStatus.IN_PROGRESS);
-        issue1.setOwner("Guillaume");
-        issue1.setCreated(df.parse("2017-09-29"));
-        issue1.setEffort(1);
-        issue1.setTitle("Tester le générateur d'appli FUN");
 
         // when
         MockHttpServletResponse response = mvc.perform(
