@@ -91,13 +91,8 @@ public class IssueController {
 
         Optional<Issue> issue;
 
-        try {
-            verifyIssue(id);
-            issue = issueService.find(id);
-        } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
-            return new ResponseEntity<>("Can't find " + id, NOT_FOUND);
-        }
+        verifyIssue(id);
+        issue = issueService.find(id);
 
         logger.info("< getIssue");
         return new ResponseEntity<>(issue, OK);
@@ -159,10 +154,9 @@ public class IssueController {
     }
 
     protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
-        Optional<Issue> issue = issueService.find(issueId);
-        // if no issue found, return 404 status code
-        if(!issue.isPresent()) {
-            throw new ResourceNotFoundException("Issue with id " + issueId + " not found");
-        }
+        issueService.find(issueId)
+                .orElseThrow(() -> new ResourceNotFoundException("Issue with id " + issueId + " not found"));
     }
+
+
 }
