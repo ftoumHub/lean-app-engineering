@@ -2,6 +2,7 @@ package org.example.issuetracker.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Data
 @Entity(name = "TACHE")
 @AllArgsConstructor
+@NoArgsConstructor
 public class Issue {
 
     @Id
@@ -29,7 +31,4 @@ public class Issue {
     private Date completionDate;
     @Enumerated(EnumType.STRING)
     private IssueStatus status;
-
-    public Issue() {
-    }
 }

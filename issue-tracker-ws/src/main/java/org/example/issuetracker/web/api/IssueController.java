@@ -96,15 +96,12 @@ public class IssueController {
      * @return
      */
     @GetMapping(value = "/issues/{id}")
-    public ResponseEntity<?> getIssue(@PathVariable("id") UUID id) {
+    public ResponseEntity getIssue(@PathVariable("id") UUID id) {
         logger.info("> getIssue with id : " + id);
 
-        Optional<Issue> issue;
-
         verifyIssue(id);
-        issue = issueService.find(id);
+        Optional<Issue> issue = issueService.find(id);
 
-        logger.info("< getIssue");
         return new ResponseEntity<>(issue, OK);
     }
 
@@ -163,10 +160,9 @@ public class IssueController {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
+    // if no issue found, return 404 status code
     protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
         issueService.find(issueId)
                 .orElseThrow(() -> new ResourceNotFoundException("Issue with id " + issueId + " not found"));
     }
-
-
 }
