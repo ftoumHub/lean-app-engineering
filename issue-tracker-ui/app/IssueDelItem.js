@@ -87,7 +87,7 @@ class IssueDelItem extends Component {
 }
 
 IssueDelItem.propTypes = {
-    issue: PropTypes.number.isRequired
+    issue: PropTypes.string.isRequired
 };
 
 export default withRouter(IssueDelItem);

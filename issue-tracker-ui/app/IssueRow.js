@@ -11,17 +11,17 @@ export default class IssueRow extends Component {
 
   render() {
     // On récupère l'attribut issue dans les props histoire de factoriser
-    const {issue} = this.props;
+    const { issue } = this.props; 
     return (
       <tr>
-        <td><Link to={`/issues/${issue.id}`}>{issue.id}</Link></td>
+        <td><Link to={`/issues/${issue.id}`}>{issue.id.substring(0, 4)}</Link></td>
         <td>{issue.status}</td>
         <td>{issue.owner}</td>
         <td>{issue.created.toDateString()}</td>
         <td>{issue.effort}</td>
         <td>{issue.completionDate ? issue.completionDate.toDateString() : ''}</td>
         <td>{issue.title}</td>
-        <td><IssueDelItem issue={issue.id}/></td>
+        <td><IssueDelItem issue={issue.id} /></td>
       </tr>
     );
   }
