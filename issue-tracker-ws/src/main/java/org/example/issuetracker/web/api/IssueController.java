@@ -108,8 +108,8 @@ public class IssueController {
     public ResponseEntity<Issue> createIssue(@RequestBody Issue issue) {
         logger.info("> createIssue");
 
-        Issue createdIssue = null;
-        if(!Objects.equals(issue.getTitle(), " ")){
+        Issue createdIssue;
+        if(issue.getTitle().replace(" ", "").length() != 0){
             try {
                 createdIssue = issueService.create(issue);
             } catch (Exception e) {
@@ -120,8 +120,6 @@ public class IssueController {
         else{
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-
 
         logger.info("< createIssue");
         return new ResponseEntity<>(createdIssue, HttpStatus.CREATED);
