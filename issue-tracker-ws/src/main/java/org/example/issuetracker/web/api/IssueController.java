@@ -120,16 +120,17 @@ public class IssueController {
             try {
                 createdIssue = issueService.create(issue);
             } catch (Exception e) {
-                logger.error("Unexpected Exception caught.", e);
+                logger.error(ERROR, e);
                 return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
             }
         }
         else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            logger.info("The field title can not be empty " + issue);
+            return new ResponseEntity<>(issue, BAD_REQUEST);
         }
 
         logger.info("< createIssue");
-        return new ResponseEntity<>(createdIssue, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdIssue, CREATED);
     }
 
     @PutMapping(value = "/issues/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

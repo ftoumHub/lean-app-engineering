@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
-import { NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, FormSelect, ControlLabel, Button, ButtonToolbar } from 'react-bootstrap';
+import { NavItem, Glyphicon, Modal, Form, FormGroup, FormControl, ControlLabel, Button, ButtonToolbar } from 'react-bootstrap';
 import Toast from './Toast.js';
 
 class IssueAddNavItem extends React.Component {
@@ -15,14 +15,12 @@ class IssueAddNavItem extends React.Component {
         this.showModal = this.showModal.bind(this);
         this.hideModal = this.hideModal.bind(this);
         this.submit = this.submit.bind(this);
-        this.displayError = this.displayError.bind(this);
-        this.hideError = this.hideError.bind(this);
         this.showError = this.showError.bind(this);
         this.dismissToast = this.dismissToast.bind(this);
     }
 
     showModal() {
-        this.setState({ showing: true });
+        this.setState({ showing: true, error : false });
     }
 
     hideModal() {
@@ -40,13 +38,6 @@ class IssueAddNavItem extends React.Component {
         this.setState({ toastVisible: false });
     }
 
-    displayError() {
-        this.setState({ error: true });
-    }
-
-    hideError() {
-        this.setState({ error: false });
-    }
 
     submit(e) {
         e.preventDefault();
@@ -65,16 +56,16 @@ class IssueAddNavItem extends React.Component {
                 if (response.ok) {
                     window.location.reload(false);
                 } else {
-                    response.json().then(error => {
-                        this.showError(`Failed to add issue: ${error.message}`);
-                    });
+                    response.json().then(
+                        this.showError(`Failed to add issue. The field Title is empty`)
+                    );
                 }
             }).catch(err => {
                 this.showError(`Error in sending data to server: ${err.message}`);
             });
         }
         else {
-            this.displayError();
+            this.setState({ error: true });
         }
     }
 
@@ -95,7 +86,7 @@ class IssueAddNavItem extends React.Component {
                     <Modal.Body>
                         <Form name="issueAdd">
                             <FormGroup>
-                                <ControlLabel>Title</ControlLabel>
+                                <ControlLabel>Title*</ControlLabel>
                                 <FormControl name="title" autoFocus required />
                                 {button}
                             </FormGroup>
@@ -112,6 +103,9 @@ class IssueAddNavItem extends React.Component {
                         </ButtonToolbar>
                     </Modal.Footer>
                 </Modal>
+                <Toast showing={this.state.toastVisible} message={this.state.toastMessage}
+                    onDismiss={this.dismissToast} bsStyle={this.state.toastType}
+                />
             </NavItem >
         );
     }
