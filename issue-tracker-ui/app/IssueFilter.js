@@ -14,6 +14,7 @@ export default class IssueFilter extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      stat: [],
       status: props.initFilter.status || '',
       effort_gte: props.initFilter.effort_gte || '',
       effort_lte: props.initFilter.effort_lte || '',
@@ -27,9 +28,13 @@ export default class IssueFilter extends Component {
     this.clearFilter = this.clearFilter.bind(this);
   }
 
+  componentDidMount() {
+    this.loadData();
+  }
+
   componentWillReceiveProps(newProps) {
     this.setState({
-      status: newProps.initFilter.status || '',
+      status: newProps.initFilter.status,
       effort_gte: newProps.initFilter.effort_gte || '',
       effort_lte: newProps.initFilter.effort_lte || '',
       changed: false
@@ -84,6 +89,22 @@ export default class IssueFilter extends Component {
     });
   }
 
+  loadData() {
+    fetch(`/api/issues/status`).then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          this.setState({ stat: data });
+        });
+      } else {
+        response.json().then(error => {
+          this.showError(`Failed to fetch issues ${error.message}`);
+        });
+      }
+    }).catch(err => {
+      this.showError(`Error in fetching data from server: ${err}`);
+    });
+  }
+
   render() {
     return (
       <Row>
@@ -91,12 +112,8 @@ export default class IssueFilter extends Component {
           <FormGroup>
             <ControlLabel>Status</ControlLabel>
             <FormControl componentClass="select" value={this.state.status} onChange={this.onChangeStatus}>
-              <option value="">(Any)</option>
-              <option value="New">New</option>
-              <option value="Open">Open</option>
-              <option value="Assigned">Assigned</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
+              <option value=""> (Any) </option>
+              {(this.state.stat).map(stat => <option value={stat.replaceAll("_", " ")}> {stat} </option>)}
             </FormControl>
           </FormGroup>
         </Col>
