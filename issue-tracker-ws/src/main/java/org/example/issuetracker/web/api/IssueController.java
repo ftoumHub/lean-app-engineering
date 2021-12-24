@@ -8,6 +8,7 @@ import org.example.issuetracker.web.dto.IssuesDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +33,9 @@ public class IssueController {
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
     }
+
+    static final String ERROR = "Unexpected Exception caught.";
+
 
     /**
      * Retourne la liste des issues
@@ -60,7 +64,7 @@ public class IssueController {
             issuesDto.setRecords(issues);
             issuesDto.getMetadata().setTotalCount(issues.size());
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(issuesDto, INTERNAL_SERVER_ERROR);
         }
 
@@ -80,6 +84,12 @@ public class IssueController {
         return issue -> issue.getEffort() > effortGte;
     }
 
+
+    @GetMapping(value = "/issues/status", produces = MediaType.APPLICATION_JSON_VALUE)
+    public IssueStatus[] getAllStatus() {
+        return IssueStatus.values();
+    }
+
     /**
      * Récupère une question grâce à son id
      *
@@ -87,15 +97,12 @@ public class IssueController {
      * @return
      */
     @GetMapping(value = "/issues/{id}")
-    public ResponseEntity<?> getIssue(@PathVariable("id") UUID id) {
+    public ResponseEntity getIssue(@PathVariable("id") UUID id) {
         logger.info("> getIssue with id : " + id);
 
-        Optional<Issue> issue;
-
         verifyIssue(id);
-        issue = issueService.find(id);
+        Optional<Issue> issue = issueService.find(id);
 
-        logger.info("< getIssue");
         return new ResponseEntity<>(issue, OK);
     }
 
@@ -114,7 +121,7 @@ public class IssueController {
         try {
             createdIssue = issueService.create(issue);
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
@@ -126,12 +133,12 @@ public class IssueController {
     public ResponseEntity<Issue> updateIssue(@RequestBody Issue issue) {
         logger.info("> updateIssue");
 
-        Issue updatedIssue = null;
+        Issue updatedIssue;
         try {
             verifyIssue(issue.getId());
             updatedIssue = issueService.update(issue);
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
@@ -147,7 +154,7 @@ public class IssueController {
             verifyIssue(issueId);
             issueService.delete(issueId);
         } catch (Exception e) {
-            logger.error("Unexpected Exception caught.", e);
+            logger.error(ERROR, e);
             return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
         }
 
@@ -155,10 +162,9 @@ public class IssueController {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
+    // if no issue found, return 404 status code
     protected void verifyIssue(UUID issueId) throws ResourceNotFoundException {
         issueService.find(issueId)
                 .orElseThrow(() -> new ResourceNotFoundException("Issue with id " + issueId + " not found"));
     }
-
-
 }

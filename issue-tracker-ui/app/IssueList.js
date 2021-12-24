@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Table, Panel } from 'react-bootstrap';
-//import mockupIssues from '../mockups/issues';
 
 import IssueRow from './IssueRow.js';
-import IssueAdd from './IssueAdd.js';
 import IssueFilter from './IssueFilter.js';
 
 
