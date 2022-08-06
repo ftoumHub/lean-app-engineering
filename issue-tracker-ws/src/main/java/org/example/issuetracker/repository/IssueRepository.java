@@ -7,6 +7,13 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface IssueRepository extends JpaRepository<Issue, UUID> {
+public class IssueRepository  {
 
+    public void deleteAll() {
+        System.out.println("");
+    }
+
+    public Issue save(Issue issue) {
+        return null;
+    }
 }

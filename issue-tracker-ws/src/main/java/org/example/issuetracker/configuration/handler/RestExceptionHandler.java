@@ -13,9 +13,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,23 +30,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException rnfe, HttpServletRequest request) {
-
+    public ResponseEntity<ErrorDetail> handleResourceNotFoundException(ResourceNotFoundException rnfe) {
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
-        errorDetail.setStatus(HttpStatus.NOT_FOUND.value());
+        errorDetail.setStatus(rnfe.getStatus().value());
         errorDetail.setTitle("Resource Not Found");
         errorDetail.setDetail(rnfe.getMessage());
         errorDetail.setDeveloperMessage(rnfe.getClass().getName());
 
-        return new ResponseEntity<>(errorDetail, null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorDetail, rnfe.getStatus());
     }
 
     @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException manve, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException manve,
+                                                               HttpHeaders headers,
+                                                               HttpStatus status,
+                                                               WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail();
-        // Populate errorDetail instance
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(HttpStatus.BAD_REQUEST.value());
         errorDetail.setTitle("Validation Failed");
@@ -56,8 +56,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         // Create ValidationError instances
         List<FieldError> fieldErrors =  manve.getBindingResult().getFieldErrors();
         for(FieldError fe : fieldErrors) {
-
-            List<ValidationError> validationErrorList = errorDetail.getErrors().computeIfAbsent(fe.getField(), k -> new ArrayList<ValidationError>());
+            List<ValidationError> validationErrorList = errorDetail.getErrors()
+                    .computeIfAbsent(fe.getField(), k -> new ArrayList<>());
             ValidationError validationError = new ValidationError();
             validationError.setCode(fe.getCode());
             validationError.setMessage(messageSource.getMessage(fe, null));
@@ -68,10 +68,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(
-            HttpMessageNotReadableException ex, HttpHeaders headers,
-            HttpStatus status, WebRequest request) {
-
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(status.value());
@@ -82,4 +82,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, errorDetail, headers, status, request);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
+                                                             HttpHeaders headers,
+                                                             HttpStatus status,
+                                                             WebRequest request) {
+        String bodyOfResponse = "This should be application specific";
+        return super.handleExceptionInternal(ex, bodyOfResponse, headers, status, request);
+    }
+
+    @ExceptionHandler(value =  MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<Object> handleMethArgTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                               HttpHeaders headers,
+                                                               HttpStatus status,
+                                                               WebRequest request) {
+        String bodyOfResponse = "Argument invalide";
+        return super.handleExceptionInternal(new Exception(ex.getCause()), bodyOfResponse, headers, status, request);
+    }
 }

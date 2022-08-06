@@ -2,7 +2,6 @@ package org.example.issuetracker.web.api;
 
 import org.example.issuetracker.configuration.exception.ResourceNotFoundException;
 import org.example.issuetracker.model.Issue;
-import org.example.issuetracker.model.IssueStatus;
 import org.example.issuetracker.repository.IssueRepository;
 import org.example.issuetracker.web.dto.error.ErrorDetail;
 import org.junit.jupiter.api.Test;
@@ -15,12 +14,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.example.issuetracker.model.IssueStatus.NEW;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureJsonTesters
 @SpringBootTest
 @AutoConfigureMockMvc
-class IssueControllerTest {
+public class IssueControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -45,59 +45,66 @@ class IssueControllerTest {
     @Autowired
     private JacksonTester<ErrorDetail> jsonError;
     @Test
-    void canRetrieveByUuidWhenExists() throws Exception {
-
-        Issue issue1 = new Issue(UUID.randomUUID(), "Tester le générateur d'appli FUN", "Guillaume", null, 1, null, IssueStatus.NEW);
+    public void canRetrieveByUuidWhenExists() throws Exception {
+        final UUID uuid = UUID.randomUUID();
+        final Issue issue = new Issue(uuid, "une nouvelle tâche", "owner", null, 1, null, NEW);
         // given
-        given(issueRepository.findById(issue1.getId())).willReturn(Optional.of(issue1));
+        given(issueRepository.findById(uuid)).willReturn(Optional.of(issue));
 
         // when
-        MockHttpServletResponse response = mvc.perform(get(format("/api/issues/%s", issue1.getId())).accept(APPLICATION_JSON))
+        MockHttpServletResponse response = mvc.perform(
+                get(format("/api/issues/%s", uuid))
+                        .accept(APPLICATION_JSON))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(OK.value());
-
-        assertThat(response.getContentAsString(StandardCharsets.UTF_8)).isEqualTo(jsonIssue.write(issue1).getJson());
+        assertThat(response.getContentAsString(UTF_8))
+                .isEqualTo(jsonIssue.write(issue).getJson());
     }
 
     @Test
-    void throwsResourceNotFoundExceptionWhenDoesNotExist() throws Exception {
+    public void failsWhenStringPassed() throws Exception {
+        // when
+        MockHttpServletResponse response = mvc.perform(
+                get(format("/api/issues/1")).accept(APPLICATION_JSON))
+                .andReturn().getResponse();
 
-        UUID uuid = UUID.randomUUID();
+        assertThat(response.getStatus()).isEqualTo(BAD_REQUEST.value());
+        // then
+        //final String errorAsString = response.getContentAsString();
+    }
 
-        ErrorDetail error = new ErrorDetail("Resource Not Found", 404,
-                String.format("Issue with id %s not found", uuid),
-                1L,
-        "org.example.issuetracker.configuration.exception.ResourceNotFoundException", null);
-
+    @Test
+    public void throwsResourceNotFoundExceptionWhenDoesNotExist() throws Exception {
+        final UUID uuid = UUID.randomUUID();
+        final ErrorDetail error = new ErrorDetail("Resource Not Found", 404, format("Issue with id %s not found", uuid), 1L, ResourceNotFoundException.class.getName(), null);
         // given
         given(issueRepository.findById(uuid))
                 .willThrow(new ResourceNotFoundException(format("Issue with id %s not found", uuid)));
 
         // when
-        MockHttpServletResponse response = mvc.perform(get(format("/api/issues/%s", uuid)).accept(APPLICATION_JSON))
+        MockHttpServletResponse response = mvc.perform(
+                get(format("/api/issues/%s", uuid)).accept(APPLICATION_JSON))
                 .andReturn().getResponse();
 
         // then
         assertThat(response.getStatus()).isEqualTo(NOT_FOUND.value());
 
         final String errorAsString = response.getContentAsString();
-        ErrorDetail errorDetail = jsonError.parse(errorAsString).getObject();
+        final ErrorDetail errorDetail = jsonError.parse(errorAsString).getObject();
 
-        ErrorDetail errorDetailBuild = errorDetail.toBuilder().timeStamp(errorDetail.getTimeStamp()).build();
-
-        assertThat(errorAsString).isEqualTo(jsonError.write(errorDetailBuild).getJson());
+        assertThat(errorAsString)
+                .isEqualTo(jsonError.write(error.toBuilder().timeStamp(errorDetail.getTimeStamp()).build()).getJson());
     }
 
     @Test
-    void canCreateANewIssue() throws Exception {
-
-        Issue issue1 = new Issue(UUID.randomUUID(), "Tester le générateur d'appli FUN", "Guillaume", null, 1, null, IssueStatus.NEW);
-
+    public void canCreateANewIssue() throws Exception {
+        final Issue issue = new Issue(UUID.randomUUID(), "title", "owner", null, 1, null, NEW);
         // when
         MockHttpServletResponse response = mvc.perform(
-                post("/api/issues/").contentType(APPLICATION_JSON).content(jsonIssue.write(issue1).getJson()
+                post("/api/issues/").contentType(APPLICATION_JSON).content(
+                        jsonIssue.write(issue).getJson()
                 )).andReturn().getResponse();
 
         // then

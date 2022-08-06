@@ -1,10 +1,8 @@
 package org.example.issuetracker;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import com.github.javafaker.Faker;
 import org.example.issuetracker.model.Issue;
@@ -15,18 +13,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+
+import static org.example.issuetracker.model.IssueStatus.DONE;
+
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);
+    private static final Faker faker = new Faker();
 
-    final
-    ConfigurableApplicationContext context;
+    final IssueRepository repository;
 
-    public Application(ConfigurableApplicationContext context) {
-        this.context = context;
+    public Application(IssueRepository repository) {
+        this.repository = repository;
     }
 
     public static void main(String[] args) {
@@ -34,70 +34,18 @@ public class Application implements CommandLineRunner {
     }
 
     public void run(String... args) {
-        IssueRepository repository = context.getBean(IssueRepository.class);
         repository.deleteAll();
         log.info("> Inserting new data...");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Faker faker = new Faker();
 
-            for (int i = 0; i < 100; i++) {
-                Issue fakeIssue = new Issue(
-                        UUID.randomUUID(),
-                        faker.lorem().sentence(10),
-                        faker.name().fullName(),
-                        faker.date().birthday(),
-                        faker.number().numberBetween(1, 8),
-                        null,
-                        IssueStatus.values()[new Random().nextInt(IssueStatus.values().length)]);
+        for (int i = 0; i < 100; i++) {
+            final String title = faker.lorem().sentence(10);
+            final String owner = faker.name().fullName();
+            final Date created = faker.date().past(10, TimeUnit.DAYS);
+            final int effort = faker.number().numberBetween(1, 20);
+            final IssueStatus status = IssueStatus.values()[new Random().nextInt(IssueStatus.values().length)];
+            final Date completionDate = status == DONE ? faker.date().future(20, TimeUnit.DAYS): null;
 
-                if (fakeIssue.getStatus() == IssueStatus.DONE) {
-                    if (fakeIssue.getCompletionDate() == null) {
-                        fakeIssue.setCompletionDate(faker.date().birthday());
-                    }
-                    while (fakeIssue.getCompletionDate().before(fakeIssue.getCreated())) {
-                        fakeIssue.setCompletionDate(faker.date().birthday());
-                    }
-
-                }
-                repository.save(fakeIssue);
-            }
-            Issue issue1 = new Issue();
-            issue1.setStatus(IssueStatus.IN_PROGRESS);
-            issue1.setOwner("Guillaume");
-            issue1.setCreated(df.parse("2017-09-29"));
-            issue1.setEffort(1);
-            issue1.setTitle("Tester le générateur d'appli FUN");
-            repository.save(issue1);
-
-            Issue issue2 = new Issue();
-            issue2.setStatus(IssueStatus.OPEN);
-            issue2.setOwner("Guillaume");
-            issue2.setCreated(df.parse("2017-10-02"));
-            issue2.setEffort(1);
-            issue2.setCompletionDate(df.parse("2017-10-03"));
-            issue2.setTitle("Importer le projet Admin REFCG dans SVN");
-            repository.save(issue2);
-
-            Issue issue3 = new Issue();
-            issue3.setStatus(IssueStatus.ASSIGNED);
-            issue3.setOwner("Georges");
-            issue3.setCreated(df.parse("2017-10-02"));
-            issue3.setEffort(5);
-            issue3.setCompletionDate(df.parse("2017-10-06"));
-            issue3.setTitle("Réaliser une maquette de l'appli en React");
-            repository.save(issue3);
-
-            Issue issue4 = new Issue();
-            issue4.setStatus(IssueStatus.ASSIGNED);
-            issue4.setOwner("Georges");
-            issue4.setCreated(df.parse("2017-10-03"));
-            issue4.setEffort(3);
-            issue4.setCompletionDate(df.parse("2017-10-06"));
-            issue4.setTitle("Récupérer le generator-funapp à jour");
-            repository.save(issue4);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            repository.save(new Issue(null, title, owner, created, effort, completionDate, status));
         }
     }
 
