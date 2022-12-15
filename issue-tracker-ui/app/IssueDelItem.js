@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
-import PropTypes, { node } from 'prop-types';
+import PropTypes from 'prop-types';
 import { NavItem, Glyphicon, Modal, Button, ButtonToolbar } from 'react-bootstrap';
 import Toast from './Toast.js';
 
